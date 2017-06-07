@@ -1,3 +1,10 @@
 <resources>
+
+    <!-- strings for the empty view of the main activity -->
+    <string name="empty_view_main">There are zero products in your inventory.</string>
+    <string name="empty_view_instruct">Get started by adding a product!
+                          \nPress the camera button at the bottom of the screen.</string>
+
+
     <string name="app_name">InventoryAppUdacity</string>
 </resources>

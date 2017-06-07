@@ -26,7 +26,7 @@
             android:layout_centerHorizontal="true"
             android:fontFamily="sans-serif-medium"
             android:paddingTop="16dp"
-            android:text="There are zero products in your inventory."
+            android:text="@string/empty_view_main"
             android:textAppearance="?android:textAppearanceMedium"/>
 
         <TextView
@@ -37,8 +37,7 @@
             android:layout_centerHorizontal="true"
             android:fontFamily="sans-serif"
             android:paddingTop="8dp"
-            android:text="Get started by adding a product!
-                          \nPress the plus button at the bottom of the screen."
+            android:text="@string/empty_view_instruct"
             android:textAppearance="?android:textAppearanceSmall"
             android:textColor="#A2AAB0"/>
     </RelativeLayout>
