@@ -37,7 +37,8 @@
             android:layout_centerHorizontal="true"
             android:fontFamily="sans-serif"
             android:paddingTop="8dp"
-            android:text="Get started by adding a product!"
+            android:text="Get started by adding a product!
+                          \nPress the plus button at the bottom of the screen."
             android:textAppearance="?android:textAppearanceSmall"
             android:textColor="#A2AAB0"/>
     </RelativeLayout>
