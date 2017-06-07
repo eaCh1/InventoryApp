@@ -1,36 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".DetailActivity">
 
-    <TextView
-        android:id="@+id/detail_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <ImageView
-        android:id="@+id/detail_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4">
+
+        <EditText
+            android:id="@+id/detail_name"
+            android:hint="@string/detail_view_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/detail_price"
+            android:hint="@string/detail_view_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/detail_quantity"
+            android:hint="@string/detail_view_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/detail_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+    </RelativeLayout>
+
     <Button
         android:id="@+id/detail_track_sale"
-        android:text="Track Sale"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:text="@string/detail_track_sale"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
     <Button
         android:id="@+id/detail_receive_shipment"
-        android:text="Receive Shipment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:text="@string/detail_receive_shipment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
     <Button
         android:id="@+id/detail_order_from_supplier"
-        android:text="Order from Supplier"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:text="@string/detail_order_from_supplier"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
     <Button
         android:id="@+id/detail_delete_record"
-        android:text="Delete Record"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:text="@string/detail_delete_record"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
 
 </LinearLayout>

@@ -5,6 +5,15 @@
     <string name="empty_view_instruct">Get started by adding a product!
                           \nPress the camera button at the bottom of the screen.</string>
 
-
+    <!-- strings for edit views in the detail activity -->
+    <string name="detail_view_name">Name</string>
+    <string name="detail_view_quantity">Quantity</string>
+    <string name="detail_view_price">Price</string>
     <string name="app_name">InventoryAppUdacity</string>
+
+    <!-- strings for the buttons in the detail activity -->
+    <string name="detail_track_sale">Track Sale</string>
+    <string name="detail_receive_shipment">Receive Shipment</string>
+    <string name="detail_order_from_supplier">Order from Supplier</string>
+    <string name="detail_delete_record">Delete Record</string>
 </resources>
