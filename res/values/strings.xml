@@ -15,5 +15,7 @@
     <string name="detail_track_sale">Track Sale</string>
     <string name="detail_receive_shipment">Receive Shipment</string>
     <string name="detail_order_from_supplier">Order from Supplier</string>
-    <string name="detail_delete_record">Delete Record</string>
+    <string name="detail_delete_record">Delete</string>
+    <string name="detail_save_record">Save</string>
+    <string name="detail_take_picture">Take Picture</string>
 </resources>
