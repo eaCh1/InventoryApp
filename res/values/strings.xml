@@ -18,4 +18,14 @@
     <string name="detail_delete_record">Delete</string>
     <string name="detail_save_record">Save</string>
     <string name="detail_take_picture">Take Picture</string>
+
+    <!-- titles fo the activity -->
+    <string name="detail_title_add_new_product">Add new Product</string>
+    <string name="detail_title_edit_a_product">Edit Product</string>
+
+    <!-- toast messages -->
+    <string name="detail_insert_product_successful">Product Successfully inserted</string>
+    <string name="detail_insert_product_failed">Error inserting Product</string>
 </resources>
+
+
