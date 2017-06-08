@@ -7,6 +7,7 @@ import android.media.Image;
 import android.os.Bundle;
 import android.net.Uri;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.database.Cursor;
@@ -186,16 +187,31 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return null;
+
+        String[] projection = {
+                ProductContract.ProductEntry._ID,
+                ProductContract.ProductEntry.COLUMN_PRODUCT_NAME,
+                ProductContract.ProductEntry.COLUMN_PRODUCT_PRICE,
+                ProductContract.ProductEntry.COLUMN_PRODUCT_QUANTITY,
+                ProductContract.ProductEntry.COLUMN_PRODUCT_SUPPLIER,
+                ProductContract.ProductEntry.COLUMN_PRODUCT_PICTURE
+        };
+
+        return new CursorLoader(this, mCurrentProductUri, projection, null, null, null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
+
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+        //reset loader if it becomes invalid
+        mNameEditText.setText("");
+        mPriceEditText.setText("");
+        mQuantityEditText.setText("");
 
     }
 }
