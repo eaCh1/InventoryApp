@@ -19,6 +19,7 @@
         android:layout_height="wrap_content" />
     <Button
         android:id="@+id/sale"
+        android:hint="@string/button_catalog_sale"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

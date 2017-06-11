@@ -113,6 +113,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         String nameString = mNameEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
+        String supplierString = mSupplierEditText.getText().toString().trim();
 
         //String imageString = mProductImageView
         //need to figure out how to SAVE THE PHOTO, maybe don't need this to be under "saved"
@@ -131,6 +132,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         values.put(ProductContract.ProductEntry.COLUMN_PRODUCT_NAME, nameString);
         values.put(ProductContract.ProductEntry.COLUMN_PRODUCT_PRICE, priceString);
         values.put(ProductContract.ProductEntry.COLUMN_PRODUCT_QUANTITY, quantityString);
+        values.put(ProductContract.ProductEntry.COLUMN_PRODUCT_SUPPLIER, supplierString);
 
         //Determine if this is a new or existing product checking if mCurrentProductUri is null or not
         if (mCurrentProductUri == null) {

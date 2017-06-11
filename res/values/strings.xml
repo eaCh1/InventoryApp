@@ -28,6 +28,7 @@
     <string name="detail_insert_product_successful">Product Successfully inserted</string>
     <string name="detail_insert_product_failed">Error inserting Product</string>
 
+    <string name="button_catalog_sale">Sale</string>
     <string name="action_save">Save</string>
     <string name="action_delete">Delete</string>
 

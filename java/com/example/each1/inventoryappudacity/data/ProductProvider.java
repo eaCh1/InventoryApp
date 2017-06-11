@@ -205,6 +205,22 @@ public class ProductProvider extends ContentProvider {
 
         }
 
+        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_QUANTITY)) {
+            Float price = values.getAsFloat(ProductEntry.COLUMN_PRODUCT_QUANTITY);
+            if (price == null) {
+                throw new IllegalArgumentException("Product requires a quantity");
+            }
+
+        }
+
+        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_QUANTITY)) {
+            Float price = values.getAsFloat(ProductEntry.COLUMN_PRODUCT_SUPPLIER);
+            if (price == null) {
+                throw new IllegalArgumentException("Product requires a supplier");
+            }
+
+        }
+
         if (values.size() == 0) {
 
             return 0;
