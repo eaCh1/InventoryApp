@@ -48,8 +48,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     static final int REQUEST_TAKE_PHOTO = 1;
 
-
-
     //Identifier for product data loader
     private static final int EXISTING_PRODUCT_LOADER = 0;
 
@@ -157,9 +155,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             //Bitmap imageBitmap = (Bitmap) extras.get("data");
-
-            //currently takes picture with button, then goes to detail activty...
-            //need to be able to send the image to the detail activity
 
             dispatchTakePictureIntent();
         }
