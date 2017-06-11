@@ -148,11 +148,11 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             //Show a toast message depending on whether or not the update was successful
             if (rowsAffected == 0) {
                 //If no rows were affected, then there was an error with the update
-                Toast.makeText(this, getString(R.string.detail_insert_product_failed),
+                Toast.makeText(this, getString(R.string.detail_update_product_failed),
                         Toast.LENGTH_SHORT).show();
             } else {
                 //Otherwise the update was succesful and we can display a toast.
-                Toast.makeText(this, getString(R.string.detail_insert_product_successful),
+                Toast.makeText(this, getString(R.string.detail_update_product_successful),
                         Toast.LENGTH_SHORT).show();
             }
 
@@ -266,7 +266,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             //String picture = cursor.getString(pictureColumnIndex);
 
             //Update the views on the screen
-            mPriceEditText.setText(name);
+            mNameEditText.setText(name);
             mQuantityEditText.setText(quantity);
             mPriceEditText.setText(price);
             mSupplierEditText.setText(supplier);
