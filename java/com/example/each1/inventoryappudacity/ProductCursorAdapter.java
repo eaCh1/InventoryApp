@@ -33,6 +33,8 @@ public class ProductCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
+        /*
+        * something about this field is causing errors for loading
         //Find the fields to populate
         TextView nameTextView = (TextView) view.findViewById(R.id.name);
         TextView quantityTextView = (TextView) view.findViewById(R.id.quantity);
@@ -53,5 +55,7 @@ public class ProductCursorAdapter extends CursorAdapter {
         nameTextView.setText(productName);
         quantityTextView.setText(productQuantity);
         priceTextView.setText(productPrice);
+
+        */
     }
 }
