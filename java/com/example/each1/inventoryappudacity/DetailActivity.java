@@ -4,9 +4,11 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.Image;
 import android.os.Bundle;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
@@ -35,6 +37,8 @@ import org.w3c.dom.Text;
 public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     //Still NEED TO FIGURE OUT HOW TO INCLUDE CAMERA STUFF
+
+    static final int REQUEST_IMAGE_CAPTURE = 1;
 
     //Identifier for product data loader
     private static final int EXISTING_PRODUCT_LOADER = 0;
@@ -93,22 +97,98 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         orderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String productName = mNameEditText.getText().toString();
-                String sendTo = mSupplierEditText.getText().toString();
-                String uriText = "mailto:" + sendTo + "?subject=" + Uri.encode("We need more " + productName);
-                Intent email = new Intent(Intent.ACTION_SENDTO);
-                email.setType("message/rfc822");
-                email.setData(Uri.parse(uriText));
-
-                if (email.resolveActivity(getPackageManager()) != null) {
-                    startActivity(Intent.createChooser(email, "Choose an email client :"));
+                if (mCurrentProductUri != null) {
+                    sendEmail();
                 }
+            }
+        });
+
+        Button saleButton = (Button) findViewById(R.id.detail_track_sale);
+        saleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mCurrentProductUri != null) {
+                    trackSale();
+                }
+            }
+        });
+
+        Button shipmentButton = (Button) findViewById(R.id.detail_receive_shipment);
+        shipmentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mCurrentProductUri != null) {
+                    receiveShipment();
+                }
+            }
+        });
+
+        Button pictureButton = (Button) findViewById(R.id.detail_take_picture);
+        pictureButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    takePicture();
             }
         });
     }
 
+    private void takePicture () {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);}
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+
+            //currently takes picture with button, then goes to detail activty...
+            //need to be able to send the image to the detail activity
+
+            Intent intent = new Intent(DetailActivity.this, DetailActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    private void trackSale() {
+        //decrease quantity
+        int quantity = 0;
+        quantity =  Integer.valueOf(mQuantityEditText.getText().toString());
+        quantity = quantity - 1;
+        mQuantityEditText.setText("" + quantity);
+    }
+
+
+    private void receiveShipment() {
+        //increase quantity
+        int quantity = 0;
+        quantity = Integer.valueOf(mQuantityEditText.getText().toString());
+        quantity = quantity + 1;
+        mQuantityEditText.setText("" + quantity);
+
+    }
+    private void sendEmail() {
+        //Get name of product for email subject
+        String productName = mNameEditText.getText().toString();
+        //Get email from supplier edit text
+        String sendTo = mSupplierEditText.getText().toString();
+        //create text with addressee and name of product for the subject of the email
+        String uriText = "mailto:" + sendTo + "?subject=" + Uri.encode("We need more " + productName);
+        //create intent
+        Intent email = new Intent(Intent.ACTION_SENDTO);
+        //pass through user information through intent
+        email.setData(Uri.parse(uriText));
+
+        if (email.resolveActivity(getPackageManager()) != null) {
+            startActivity(Intent.createChooser(email, "Choose an email client:"));
+        }
+    }
+
     private void saveProduct() {
-        //Read from input fields and use trim() to elminiate whitespace
+        //Read from input fields and use trim() to eliminate whitespace
         String nameString = mNameEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();

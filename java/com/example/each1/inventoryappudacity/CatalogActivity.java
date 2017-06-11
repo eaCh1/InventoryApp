@@ -21,10 +21,7 @@ import com.example.each1.inventoryappudacity.data.ProductContract.ProductEntry;
 
 public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
-
-    static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int PRODUCT_LOADER = 0;
-
 
     ProductCursorAdapter mCursorAdapter;
 
@@ -42,15 +39,6 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
                 Intent intent = new Intent(CatalogActivity.this, DetailActivity.class);
                 startActivity(intent);
-                /*
-                * This is the functioning button to take a picture
-                * using the above intent for testing purposes
-
-                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);}
-
-                */
             }
         });
 
@@ -65,8 +53,6 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         //there is no pet data yet (until the loader finishes) so pass in null for the Cursor
         mCursorAdapter = new ProductCursorAdapter(this, null);
         productListView.setAdapter(mCursorAdapter);
-
-
 
         //Setup item click listener
         productListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -91,21 +77,6 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         getSupportLoaderManager().initLoader(PRODUCT_LOADER, null, this);
 
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-
-            //currently takes picture with button, then goes to detail activty...
-            //need to be able to send the image to the detail activity
-
-            Intent intent = new Intent(CatalogActivity.this, DetailActivity.class);
-            startActivity(intent);
-        }
-    }
-
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
