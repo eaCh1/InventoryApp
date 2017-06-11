@@ -22,7 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.each1.inventoryappudacity.data.ProductContract;
+import com.example.each1.inventoryappudacity.data.ProductContract.ProductEntry;
 
 import org.w3c.dom.Text;
 
@@ -59,18 +59,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     //Boolean flag that keeps track of whether the pet has been edited (true) or not (false)
     private boolean mProductHasChanged = false;
 
-    /**
-     * OnTouchListener that listens for any touches on a View, implying that they are modifying
-     * the view, and we change the mPetHasChanged boolean to true.
-     */
-    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            mProductHasChanged = true;
-            return false;
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,22 +86,24 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mNameEditText = (EditText) findViewById(R.id.detail_name);
         mPriceEditText = (EditText) findViewById(R.id.detail_price);
         mQuantityEditText = (EditText) findViewById(R.id.detail_quantity);
-        mProductImageView = (ImageView) findViewById(R.id.detail_image);
-
-        //Setup OnTouchListeners on all the input fiels so we can determine if the user has touched
-        // or modified them, this will let us know if there are unsaved changes
-        mNameEditText.setOnTouchListener(mTouchListener);
-        mQuantityEditText.setOnTouchListener(mTouchListener);
-        mPriceEditText.setOnTouchListener(mTouchListener);
-        mProductImageView.setOnTouchListener(mTouchListener);
+        mSupplierEditText = (EditText) findViewById(R.id.detail_supplier);
+        //mProductImageView = (ImageView) findViewById(R.id.detail_image);
     }
 
     private void saveProduct() {
+
+        /*commenting out for testing
+        *
+         */
         //Read from input fields and use trim() to elminiate whitespace
         String nameString = mNameEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
         String supplierString = mSupplierEditText.getText().toString().trim();
+        int price = Integer.parseInt(priceString);
+        int quantity = Integer.parseInt(quantityString);
+
+
 
         //String imageString = mProductImageView
         //need to figure out how to SAVE THE PHOTO, maybe don't need this to be under "saved"
@@ -122,23 +112,23 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         //and check if all the fiels in the editor are blank
         if (mCurrentProductUri == null &&
                 TextUtils.isEmpty(nameString) && TextUtils.isEmpty(priceString) &&
-                TextUtils.isEmpty(quantityString)) {
+                TextUtils.isEmpty(quantityString) && TextUtils.isEmpty(supplierString)) {
             //since no fiels were modified, we can return early without creating a new pet
             //No need to create a ContentValues and no need to do any ContentProvider operations;
             return;
         }
 
         ContentValues values = new ContentValues();
-        values.put(ProductContract.ProductEntry.COLUMN_PRODUCT_NAME, nameString);
-        values.put(ProductContract.ProductEntry.COLUMN_PRODUCT_PRICE, priceString);
-        values.put(ProductContract.ProductEntry.COLUMN_PRODUCT_QUANTITY, quantityString);
-        values.put(ProductContract.ProductEntry.COLUMN_PRODUCT_SUPPLIER, supplierString);
+        values.put(ProductEntry.COLUMN_PRODUCT_NAME, nameString);
+        values.put(ProductEntry.COLUMN_PRODUCT_PRICE, price);
+        values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, quantity);
+        values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER, supplierString);
 
         //Determine if this is a new or existing product checking if mCurrentProductUri is null or not
         if (mCurrentProductUri == null) {
             //This is a NEW product, so insert a new product into the provider
             //Return the content URI for the new product
-            Uri newUri = getContentResolver().insert(ProductContract.ProductEntry.CONTENT_URI, values);
+            Uri newUri = getContentResolver().insert(ProductEntry.CONTENT_URI, values);
 
             //shows a toast message depending on whether ot not the insertion was successful
             if (newUri == null) {
@@ -198,7 +188,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         switch (item.getItemId()) {
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
-                // Save pet to database
+                // Save product to database
                 saveProduct();
                 //Exit activity
                 finish();
@@ -244,12 +234,12 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
         String[] projection = {
-                ProductContract.ProductEntry._ID,
-                ProductContract.ProductEntry.COLUMN_PRODUCT_NAME,
-                ProductContract.ProductEntry.COLUMN_PRODUCT_PRICE,
-                ProductContract.ProductEntry.COLUMN_PRODUCT_QUANTITY,
-                ProductContract.ProductEntry.COLUMN_PRODUCT_SUPPLIER,
-                ProductContract.ProductEntry.COLUMN_PRODUCT_PICTURE
+                ProductEntry._ID,
+                ProductEntry.COLUMN_PRODUCT_NAME,
+                ProductEntry.COLUMN_PRODUCT_PRICE,
+                ProductEntry.COLUMN_PRODUCT_QUANTITY,
+                ProductEntry.COLUMN_PRODUCT_SUPPLIER
+                //ProductEntry.COLUMN_PRODUCT_PICTURE
         };
 
         return new CursorLoader(this, mCurrentProductUri, projection, null, null, null);
@@ -265,11 +255,11 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         if (cursor.moveToFirst()) {
             //Find the names of the columns
-            int nameColumnIndex = cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRODUCT_NAME);
-            int priceColumnIndex = cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRODUCT_PRICE);
-            int quantityColumnIndex = cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRODUCT_QUANTITY);
-            int supplierColumnIndex = cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRODUCT_SUPPLIER);
-            int pictureColumnIndex = cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRODUCT_PRICE);
+            int nameColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_NAME);
+            int priceColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_PRICE);
+            int quantityColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_QUANTITY);
+            int supplierColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_SUPPLIER);
+            //int pictureColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_PRICE);
 
 
             //Extract the values
@@ -277,7 +267,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             int quantity = cursor.getInt(quantityColumnIndex);
             int price = cursor.getInt(priceColumnIndex);
             String supplier = cursor.getString(supplierColumnIndex);
-            String picture = cursor.getString(pictureColumnIndex);
+            //String picture = cursor.getString(pictureColumnIndex);
 
             //Update the views on the screen
             mPriceEditText.setText(name);

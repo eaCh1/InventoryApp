@@ -27,13 +27,13 @@ public class ProductDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // Create a String that contains the SQL statement to create the products table
-        String SQL_CREATE_PRODUCTS_TABLE = "CREATE TABLE" + ProductEntry.TABLE_NAME + " ("
-                + ProductEntry._ID + "INTEGER PRIMARY KEY AUTOINCREMENT, "
+        String SQL_CREATE_PRODUCTS_TABLE = "CREATE TABLE " + ProductEntry.TABLE_NAME + " ("
+                + ProductEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + ProductEntry.COLUMN_PRODUCT_NAME + " TEXT NOT NULL, "
-                + ProductEntry.COLUMN_PRODUCT_PRICE + "INTEGER NOT NULL, "
-                + ProductEntry.COLUMN_PRODUCT_QUANTITY + " INTEGER NO NULL DEFAULT 0, "
-                + ProductEntry.COLUMN_PRODUCT_SUPPLIER + " TEXT NOT NULL, "
-                + ProductEntry.COLUMN_PRODUCT_PICTURE + " TEXT);";
+                + ProductEntry.COLUMN_PRODUCT_PRICE + " INTEGER NOT NULL, "
+                + ProductEntry.COLUMN_PRODUCT_QUANTITY + " INTEGER NOT NULL, "
+                + ProductEntry.COLUMN_PRODUCT_SUPPLIER + " TEXT NOT NULL);";
+                //+ ProductEntry.COLUMN_PRODUCT_PICTURE + " TEXT);";
 
         //Execute the SQL statement
         db.execSQL(SQL_CREATE_PRODUCTS_TABLE);

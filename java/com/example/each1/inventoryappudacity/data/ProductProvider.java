@@ -5,8 +5,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.*;
 import android.net.Uri;
 import android.util.Log;
 import android.support.annotation.NonNull;
@@ -33,7 +32,7 @@ public class ProductProvider extends ContentProvider {
 
         sUriMatcher.addURI(ProductContract.CONTENT_AUTHORITY, ProductContract.PATH_PRODUCTS, PRODUCTS);
 
-        sUriMatcher.addURI(ProductContract.CONTENT_AUTHORITY,  ProductContract.PATH_PRODUCTS + "/#", PRODUCT_ID);
+        sUriMatcher.addURI(ProductContract.CONTENT_AUTHORITY, ProductContract.PATH_PRODUCTS + "/#", PRODUCT_ID);
     }
 
     //Database helper object
@@ -46,9 +45,8 @@ public class ProductProvider extends ContentProvider {
         return true;
     }
 
-    @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         //Get readable database
         SQLiteDatabase database = mDbHelper.getReadableDatabase();
 
@@ -82,9 +80,9 @@ public class ProductProvider extends ContentProvider {
         return cursor;
     }
 
-    @Nullable
+
     @Override
-    public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
+    public Uri insert(Uri uri, ContentValues contentValues) {
         final int match = sUriMatcher.match(uri);
 
         switch (match) {
@@ -98,6 +96,8 @@ public class ProductProvider extends ContentProvider {
     //Insert a product into the database with content values.
     //return the new content uri for that specific row
     private  Uri insertProduct(Uri uri, ContentValues values) {
+
+
 
         //Check to make sure the name is not null
         String name = values.getAsString(ProductEntry.COLUMN_PRODUCT_NAME);
@@ -113,7 +113,7 @@ public class ProductProvider extends ContentProvider {
         }
 
         //Check to make sure the price is not null
-        Float price = values.getAsFloat(ProductEntry.COLUMN_PRODUCT_PRICE);
+        Integer price = values.getAsInteger(ProductEntry.COLUMN_PRODUCT_PRICE);
         if (price == null) {
             throw new IllegalArgumentException("Product requires a price");
         }
@@ -124,6 +124,7 @@ public class ProductProvider extends ContentProvider {
             throw new IllegalArgumentException("Product requires a supplier");
         }
 
+
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         long id = database.insert(ProductEntry.TABLE_NAME, null, values);
@@ -133,7 +134,7 @@ public class ProductProvider extends ContentProvider {
             return null;
         }
 
-        //notify all listeners that the data has changed for the pet content URI
+        //notify all listeners that the data has changed for the product content URI
         getContext().getContentResolver().notifyChange(uri, null);
 
         // once we know the ID of the new row in the table
@@ -198,7 +199,7 @@ public class ProductProvider extends ContentProvider {
         }
 
         if (values.containsKey(ProductEntry.COLUMN_PRODUCT_PRICE)) {
-            Float price = values.getAsFloat(ProductEntry.COLUMN_PRODUCT_PRICE);
+            Integer price = values.getAsInteger(ProductEntry.COLUMN_PRODUCT_PRICE);
             if (price == null) {
                 throw new IllegalArgumentException("Product requires a price");
             }
@@ -206,16 +207,16 @@ public class ProductProvider extends ContentProvider {
         }
 
         if (values.containsKey(ProductEntry.COLUMN_PRODUCT_QUANTITY)) {
-            Float price = values.getAsFloat(ProductEntry.COLUMN_PRODUCT_QUANTITY);
-            if (price == null) {
+            Integer quantity = values.getAsInteger(ProductEntry.COLUMN_PRODUCT_QUANTITY);
+            if (quantity == null) {
                 throw new IllegalArgumentException("Product requires a quantity");
             }
 
         }
 
         if (values.containsKey(ProductEntry.COLUMN_PRODUCT_QUANTITY)) {
-            Float price = values.getAsFloat(ProductEntry.COLUMN_PRODUCT_SUPPLIER);
-            if (price == null) {
+            String supplier = values.getAsString(ProductEntry.COLUMN_PRODUCT_SUPPLIER);
+            if (supplier == null) {
                 throw new IllegalArgumentException("Product requires a supplier");
             }
 
@@ -241,7 +242,6 @@ public class ProductProvider extends ContentProvider {
         return rowsUpdated;
     }
 
-    @Nullable
     @Override
     public String getType(Uri uri) {
         final int match = sUriMatcher.match(uri);

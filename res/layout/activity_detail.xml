@@ -35,28 +35,33 @@
             <EditText
                 android:id="@+id/detail_name"
                 android:hint="@string/detail_view_name"
+                android:inputType="textNoSuggestions"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
             <EditText
                 android:id="@+id/detail_price"
                 android:hint="@string/detail_view_price"
+                android:inputType="number"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
             <EditText
                 android:id="@+id/detail_quantity"
                 android:hint="@string/detail_view_quantity"
+                android:inputType="number"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
             <EditText
                 android:id="@+id/detail_supplier"
                 android:hint="@string/detail_supplier_email"
+                android:inputType="textEmailAddress"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
 
+            <!-- Buttons for Save and Delete if you don't use the menuOption
             <Button
                 android:id="@+id/detail_save_record"
                 android:text="@string/detail_save_record"
@@ -69,6 +74,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
+                -->
 
         </LinearLayout>
 
@@ -80,7 +86,7 @@
                 android:id="@+id/detail_image"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
-                android:background="@color/colorAccent"/>
+                android:background="@color/colorAccent" />
 
             <Button
                 android:id="@+id/detail_take_picture"

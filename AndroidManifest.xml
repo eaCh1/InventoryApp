@@ -43,6 +43,11 @@
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
 
+        <provider
+            android:name=".data.ProductProvider"
+            android:authorities="com.example.each1.inventoryappudacity"
+            android:exported="false" />
+
     </application>
 
 
