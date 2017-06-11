@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
-import com.example.each1.inventoryappudacity.data.ProductContract;
+import com.example.each1.inventoryappudacity.data.ProductContract.ProductEntry;
 
 import org.w3c.dom.Text;
 
@@ -33,8 +33,7 @@ public class ProductCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
-        /*
-        * something about this field is causing errors for loading
+
         //Find the fields to populate
         TextView nameTextView = (TextView) view.findViewById(R.id.name);
         TextView quantityTextView = (TextView) view.findViewById(R.id.quantity);
@@ -42,20 +41,19 @@ public class ProductCursorAdapter extends CursorAdapter {
 
 
         //Find the columns of the product attributes
-        int nameColumnIndex = cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRODUCT_NAME);
-        int quantityColumnIndex = cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRODUCT_QUANTITY);
-        int priceColumnIndex = cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRODUCT_PRICE);
+        int nameColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_NAME);
+        int quantityColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_QUANTITY);
+        int priceColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_PRICE);
 
         //Extract the information from those views
         String productName = cursor.getString(nameColumnIndex);
-        int productQuantity = cursor.getInt(quantityColumnIndex);
-        int productPrice = cursor.getInt(priceColumnIndex);
+        String productQuantity = cursor.getString(quantityColumnIndex);
+        String productPrice = cursor.getString(priceColumnIndex);
 
         //populate fields
         nameTextView.setText(productName);
         quantityTextView.setText(productQuantity);
         priceTextView.setText(productPrice);
 
-        */
     }
 }
