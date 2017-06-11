@@ -100,8 +100,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         String priceString = mPriceEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
         String supplierString = mSupplierEditText.getText().toString().trim();
-        int price = Integer.parseInt(priceString);
-        int quantity = Integer.parseInt(quantityString);
 
 
 
@@ -111,8 +109,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         //Check if this is supposed to be a new product
         //and check if all the fiels in the editor are blank
         if (mCurrentProductUri == null &&
-                TextUtils.isEmpty(nameString) && TextUtils.isEmpty(priceString) &&
-                TextUtils.isEmpty(quantityString) && TextUtils.isEmpty(supplierString)) {
+                TextUtils.isEmpty(nameString) || TextUtils.isEmpty(priceString) ||
+                TextUtils.isEmpty(quantityString) || TextUtils.isEmpty(supplierString)) {
             //since no fiels were modified, we can return early without creating a new pet
             //No need to create a ContentValues and no need to do any ContentProvider operations;
             return;
@@ -120,8 +118,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         ContentValues values = new ContentValues();
         values.put(ProductEntry.COLUMN_PRODUCT_NAME, nameString);
-        values.put(ProductEntry.COLUMN_PRODUCT_PRICE, price);
-        values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, quantity);
+        values.put(ProductEntry.COLUMN_PRODUCT_PRICE, priceString);
+        values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, quantityString);
         values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER, supplierString);
 
         //Determine if this is a new or existing product checking if mCurrentProductUri is null or not
