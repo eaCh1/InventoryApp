@@ -50,6 +50,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
+            <EditText
+                android:id="@+id/detail_supplier"
+                android:hint="@string/detail_supplier_email"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
 
             <Button
                 android:id="@+id/detail_save_record"

@@ -18,6 +18,7 @@
     <string name="detail_delete_record">Delete</string>
     <string name="detail_save_record">Save</string>
     <string name="detail_take_picture">Take Picture</string>
+    <string name="detail_supplier_email">Supplier Email</string>
 
     <!-- titles fo the activity -->
     <string name="detail_title_add_new_product">Add new Product</string>
@@ -26,6 +27,21 @@
     <!-- toast messages -->
     <string name="detail_insert_product_successful">Product Successfully inserted</string>
     <string name="detail_insert_product_failed">Error inserting Product</string>
+
+    <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
+
+    <string name="unsaved_changes_dialog_msg">Discard your changes and quit editing?</string>
+    <string name="discard">Discard</string>
+    <string name="keep_editing">Keep Editing</string>
+
+    <string name="delete_dialog_msg">Delete this product?</string>
+    <string name="delete">Delete</string>
+
+    <string name="cancel">Cancel</string>
+
+    <string name="detail_delete_product_failed">Error with deleting product.</string>
+    <string name="detail_delete_product_successful">Product deleted</string>
 </resources>
 
 
