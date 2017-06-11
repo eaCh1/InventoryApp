@@ -169,6 +169,74 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu options from the res/menu/menu_editor.xml file.
+        // This adds menu items to the app bar.
+        getMenuInflater().inflate(R.menu.menu_detail, menu);
+        return true;
+    }
+
+    //This method is called after invalidateOptionsMenu(), so that the
+    //menu can be updated (some menu items can me hidden or made visible).
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        //If this is a new pet, hide the "Delete" menu item
+        if (mCurrentProductUri == null) {
+            MenuItem menuItem = menu.findItem(R.id.action_delete);
+            menuItem.setVisible(false);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // User clicked on a menu option in the app bar overflow menu
+        switch (item.getItemId()) {
+            // Respond to a click on the "Save" menu option
+            case R.id.action_save:
+                // Save pet to database
+                saveProduct();
+                //Exit activity
+                finish();
+                return true;
+            // Respond to a click on the "Delete" menu option
+            case R.id.action_delete:
+                //Pop up confirmation dialog for deletion
+                showDeleteConfirmationDialog();
+                return true;
+            // Respond to a click on the "Up" arrow button in the app bar
+            case android.R.id.home:
+                // Navigate back to parent activity (CatalogActivity)
+                //if the pet hasn't changed, continue with navigating up to the parent activity
+                //which is the {@link CatalogActivity}
+                if (!mProductHasChanged) {
+                    NavUtils.navigateUpFromSameTask(DetailActivity.this);
+                    return true;
+                }
+
+                //Otherwise if there are unsaved changes, setup a dialog to warn the user.
+                //Create a click listener to handle the user confirming that
+                //changes should be discarded
+                DialogInterface.OnClickListener discardButtonClickListener =
+                        new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //user clicked "Discard" button, navigate to parent activity
+                                NavUtils.navigateUpFromSameTask(DetailActivity.this);
+                            }
+                        };
+
+                //Show a dialog that notifies the user they have unsaved changes
+                showUnsavedChangesDialog(discardButtonClickListener);
+                return true;
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -258,7 +326,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Delete" button, so delete the pet.
-                deletePet();
+                deleteProduct();
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -276,7 +344,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         alertDialog.show();
     }
 
-    private void deletePet() {
+    private void deleteProduct() {
         if (mCurrentProductUri != null) {
             //Call the Content Resolver to delete the pet at the given content URI
             //Pass in null for the selection and selection args because the mCurrentPetUri
