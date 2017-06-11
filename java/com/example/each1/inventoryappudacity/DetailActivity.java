@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -65,54 +66,63 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         setContentView(R.layout.activity_detail);
 
         //use getIntent() and getData() to get the associated URI
-
         Intent intent = getIntent();
         mCurrentProductUri = intent.getData();
 
-        //If the intent DOES NOT contain a product content uri, then we know we are creating a new pet
+        //If the intent doesn't contain a product content uri, then creating a new pet
         if (mCurrentProductUri == null) {
             setTitle(getString(R.string.detail_title_add_new_product));
 
         } else {
-            //Otherwise this is an existing product, so change app bar to say "Edit Product"
+            //xisting product, so change app to "Edit Product"
             setTitle(getString(R.string.detail_title_edit_a_product));
 
-            //Initialize a loader to read the pet data form the database
+            //Initialize a loader to read the product data form the database
             //and display the current values in the editor
             getSupportLoaderManager().initLoader(EXISTING_PRODUCT_LOADER, null, this);
         }
 
-        //Find all relevant views that we will need to read user input
+        //Find views that we will need to read user input
         mNameEditText = (EditText) findViewById(R.id.detail_name);
         mPriceEditText = (EditText) findViewById(R.id.detail_price);
         mQuantityEditText = (EditText) findViewById(R.id.detail_quantity);
         mSupplierEditText = (EditText) findViewById(R.id.detail_supplier);
         //mProductImageView = (ImageView) findViewById(R.id.detail_image);
+
+        Button orderButton = (Button) findViewById(R.id.detail_order_from_supplier);
+        orderButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String productName = mNameEditText.getText().toString();
+                String sendTo = mSupplierEditText.getText().toString();
+                String uriText = "mailto:" + sendTo + "?subject=" + Uri.encode("We need more " + productName);
+                Intent email = new Intent(Intent.ACTION_SENDTO);
+                email.setType("message/rfc822");
+                email.setData(Uri.parse(uriText));
+
+                if (email.resolveActivity(getPackageManager()) != null) {
+                    startActivity(Intent.createChooser(email, "Choose an email client :"));
+                }
+            }
+        });
     }
 
     private void saveProduct() {
-
-        /*commenting out for testing
-        *
-         */
         //Read from input fields and use trim() to elminiate whitespace
         String nameString = mNameEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
         String supplierString = mSupplierEditText.getText().toString().trim();
-
-
-
         //String imageString = mProductImageView
         //need to figure out how to SAVE THE PHOTO, maybe don't need this to be under "saved"
 
         //Check if this is supposed to be a new product
-        //and check if all the fiels in the editor are blank
+        //and check if the fields in the editor are blank
         if (mCurrentProductUri == null &&
                 TextUtils.isEmpty(nameString) || TextUtils.isEmpty(priceString) ||
                 TextUtils.isEmpty(quantityString) || TextUtils.isEmpty(supplierString)) {
-            //since no fiels were modified, we can return early without creating a new pet
-            //No need to create a ContentValues and no need to do any ContentProvider operations;
+            //since no fields were modified, return early
+            //No ContentValues, nor ContentProvider operations;
             return;
         }
 
@@ -124,23 +134,22 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         //Determine if this is a new or existing product checking if mCurrentProductUri is null or not
         if (mCurrentProductUri == null) {
-            //This is a NEW product, so insert a new product into the provider
+            //new product, insert a new product into the provider
             //Return the content URI for the new product
             Uri newUri = getContentResolver().insert(ProductEntry.CONTENT_URI, values);
 
-            //shows a toast message depending on whether ot not the insertion was successful
+            //shows a toast message depending on whether or not the insertion was successful
             if (newUri == null) {
-                //If the content URI is null, then there was an error with insertion
+                //If URI is null, there was an error with insertion
                 Toast.makeText(this, getString(R.string.detail_insert_product_failed),
                         Toast.LENGTH_SHORT).show();
             } else {
-                //Otherwise, the insertion was successful and we can display a toast.
+                //insertion was successful and we can display a toast.
                 Toast.makeText(this, getString(R.string.detail_insert_product_successful),
                         Toast.LENGTH_SHORT).show();
             }
         } else {
-            //Otherwise this is an EXISTING product, so update product with content URI: mCurrentProductUri
-            //and pass in the new ContentValues.
+            //EXISTING product, update product with content URI: mCurrentProductUri, pass in the new ContentValues.
             // Pass in null for the selection and selection args
 
             int rowsAffected = getContentResolver().update(mCurrentProductUri, values, null, null);
@@ -151,7 +160,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 Toast.makeText(this, getString(R.string.detail_update_product_failed),
                         Toast.LENGTH_SHORT).show();
             } else {
-                //Otherwise the update was succesful and we can display a toast.
+                // update was successful, display a toast.
                 Toast.makeText(this, getString(R.string.detail_update_product_successful),
                         Toast.LENGTH_SHORT).show();
             }
@@ -161,8 +170,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu options from the res/menu/menu_editor.xml file.
-        // This adds menu items to the app bar.
         getMenuInflater().inflate(R.menu.menu_detail, menu);
         return true;
     }
@@ -172,7 +179,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        //If this is a new pet, hide the "Delete" menu item
         if (mCurrentProductUri == null) {
             MenuItem menuItem = menu.findItem(R.id.action_delete);
             menuItem.setVisible(false);
@@ -199,14 +205,14 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
                 // Navigate back to parent activity (CatalogActivity)
-                //if the pet hasn't changed, continue with navigating up to the parent activity
+                //if product hasn't changed, continue with navigating up to the parent activity
                 //which is the {@link CatalogActivity}
                 if (!mProductHasChanged) {
                     NavUtils.navigateUpFromSameTask(DetailActivity.this);
                     return true;
                 }
 
-                //Otherwise if there are unsaved changes, setup a dialog to warn the user.
+                //if there are unsaved changes, warn the user.
                 //Create a click listener to handle the user confirming that
                 //changes should be discarded
                 DialogInterface.OnClickListener discardButtonClickListener =
@@ -332,9 +338,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     private void deleteProduct() {
         if (mCurrentProductUri != null) {
-            //Call the Content Resolver to delete the pet at the given content URI
-            //Pass in null for the selection and selection args because the mCurrentPetUri
-            //content URI already identifies the pet that we want
+            //Call the Content Resolver to delete product at the given content URI
+            //Pass in null for the selection and selection args
             int rowsDeleted = getContentResolver().delete(mCurrentProductUri, null, null);
 
             //show a toast message depending on whether or not the delete was succesful
@@ -347,7 +352,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                         Toast.LENGTH_SHORT).show();
             }
         }
-
         //Close the activity
         finish();
     }

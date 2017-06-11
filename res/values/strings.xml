@@ -46,6 +46,20 @@
 
     <string name="detail_delete_product_failed">Error with deleting product.</string>
     <string name="detail_delete_product_successful">Product deleted</string>
+
+    <string name="name">Name</string>
+    <string name="quantity">Quantity</string>
+    <string name="price">Price</string>
+    <string name="supplier_email">Supplier Email</string>
+
+    <string name="id_name">Name</string>
+    <string name="id_quantity">Quantity</string>
+    <string name="id_price">Price</string>
+    <string name="id_supplier_email">Supplier Email</string>
+
+    <string name="id_list_top">id_list_top</string>
+    <string name="id_list_below">id_list_below</string>
+
 </resources>
 
 
