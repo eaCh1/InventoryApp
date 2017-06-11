@@ -35,7 +35,6 @@
             <EditText
                 android:id="@+id/detail_name"
                 android:hint="@string/detail_view_name"
-                android:inputType="textNoSuggestions"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"/>

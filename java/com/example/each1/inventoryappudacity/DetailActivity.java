@@ -250,7 +250,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             return;
         }
 
-
         if (cursor.moveToFirst()) {
             //Find the names of the columns
             int nameColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_NAME);
@@ -259,11 +258,10 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             int supplierColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_SUPPLIER);
             //int pictureColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_PRICE);
 
-
             //Extract the values
             String name = cursor.getString(nameColumnIndex);
-            int quantity = cursor.getInt(quantityColumnIndex);
-            int price = cursor.getInt(priceColumnIndex);
+            String quantity = cursor.getString(quantityColumnIndex);
+            String price = cursor.getString(priceColumnIndex);
             String supplier = cursor.getString(supplierColumnIndex);
             //String picture = cursor.getString(pictureColumnIndex);
 
@@ -272,10 +270,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             mQuantityEditText.setText(quantity);
             mPriceEditText.setText(price);
             mSupplierEditText.setText(supplier);
-
         }
-
-
     }
 
     @Override
@@ -284,6 +279,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mNameEditText.setText("");
         mPriceEditText.setText("");
         mQuantityEditText.setText("");
+        mSupplierEditText.setText("");
 
     }
 
@@ -347,7 +343,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                         Toast.LENGTH_SHORT).show();
             } else {
                 //Otherwise, the delete was successful and we can display a toast
-                Toast.makeText(this, getString(R.string.detail_insert_product_successful),
+                Toast.makeText(this, getString(R.string.detail_delete_product_successful),
                         Toast.LENGTH_SHORT).show();
             }
         }

@@ -67,7 +67,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         productListView.setAdapter(mCursorAdapter);
 
 
-        /*
+
         //Setup item click listener
         productListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -77,16 +77,15 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
                 //Form the content URI that represents the specific pet that was clicked on,
                 //by appending the ID (passed as input to this method) onto the PetEntry.CONTENT_URI
-                Uri currentPetUri = ContentUris.withAppendedId(ProductEntry.CONTENT_URI, id);
+                Uri currentProductUri = ContentUris.withAppendedId(ProductEntry.CONTENT_URI, id);
 
                 //Set the uri on the data field of the intent
-                intent.setData(currentPetUri);
+                intent.setData(currentProductUri);
 
                 startActivity(intent);
             }
         });
 
-        */
 
         //Kick offf the loader
         getSupportLoaderManager().initLoader(PRODUCT_LOADER, null, this);
