@@ -57,8 +57,9 @@
     <string name="id_price">Price</string>
     <string name="id_supplier_email">Supplier Email</string>
 
-    <string name="id_list_top">id_list_top</string>
-    <string name="id_list_below">id_list_below</string>
+    <string name="catalog_name_title">Name: ""</string>
+    <string name="catalog_quantity_title">Quantity: ""</string>
+    <string name="catalog_price_title">Price: $</string>
 
 </resources>
 
