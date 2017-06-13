@@ -1,3 +1,5 @@
+//camera implementation utilizes code from https://github.com/crlsndrsjmnz/MyFileProviderExample
+
 package com.example.each1.inventoryappudacity;
 
 import android.Manifest;
@@ -42,6 +44,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static android.os.Environment.getExternalStorageDirectory;
+
 
 /**
  * Created by each1 on 6/4/17.
@@ -53,12 +57,14 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     public final String APP_TAG = "InventoryApp";
 
-    static final int REQUEST_TAKE_PHOTO = 1;
-
-    private static final int MY_PERMISSIONS_REQUEST = 2;
+    private static final String LOG_TAG = DetailActivity.class.getSimpleName();
 
     //Identifier for product data loader
     private static final int EXISTING_PRODUCT_LOADER = 0;
+
+    static final int REQUEST_TAKE_PHOTO = 1;
+
+    private static final int PERMISSIONS_REQUEST = 2;
 
     private static final String FILE_PROVIDER_AUTHORITY = "com.example.android.fileprovider";
 
@@ -91,14 +97,24 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private Uri mUri;
     Button mCameraButton;
 
+    /* do i need these
+    private static final int PICK_IMAGE_REQUEST = 0;
+
+    private boolean isGalleryPicture = false;
+
+    private static final String JPEG_FILE_PREFIX = "IMG_";
+    private static final String JPEG_FILE_SUFFIX = ".jpg";
     private static final String CAMERA_DIR = "/dcim/";
+
+    */
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        //requestPermissions();
+        requestPermissions();
 
         //use getIntent() and getData() to get the associated URI
         Intent intent = getIntent();
@@ -155,12 +171,12 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             }
         });
 
-        mProductImage.setOnClickListener(new View.OnClickListener() {
+        mCameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //dispatchTakePictureIntent();
                 //or you can use your method
-                // takePicture();
+                takePicture();
             }
         });
     }
@@ -168,8 +184,19 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     //Be weary: the Take Picture button acts like the Save button in some way, meaning, it needs input checks like CurrentProductUri
       private void takePicture () {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null)
-            {startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);}
+          try {
+
+              File file = createImageFile();
+              Log.d(LOG_TAG, "File: " + file.getAbsolutePath());
+              //mUri = getPhotoFileUri(file);
+              mUri = FileProvider.getUriForFile(this, FILE_PROVIDER_AUTHORITY, file);
+              takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mUri);
+
+              if (takePictureIntent.resolveActivity(getPackageManager()) != null)
+              {startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);}
+          } catch (IOException e) {
+              e.printStackTrace();
+          }
       }
 
 
@@ -177,11 +204,21 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
 
+
+            /*
+            Uri imageUri = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            */
         }
     }
 
 
-    public Uri getPhotoFileUri(String fileName) {
+    public Uri getPhotoFileUri(File fileName) {
 
         if (isExternalStorageWritable()) {
             File mediaStorageDir = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), APP_TAG);
@@ -194,7 +231,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             // Return the file target for the photo based on filename
             File file = new File(mediaStorageDir.getPath() + File.separator + fileName);
 
-            return FileProvider.getUriForFile(DetailActivity.this, "com.each1.fileprovider", file);
+            return FileProvider.getUriForFile(DetailActivity.this, FILE_PROVIDER_AUTHORITY, file);
 
         }
         return null;
@@ -216,7 +253,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         return image;
     }
 
-
     // Checks if external storage is available for read and write
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
@@ -226,15 +262,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         return false;
     }
 
-    public File getAlbumStorageDir(String albumName) {
-        // Get the directory for the user's public pictures directory.
-        File file = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), albumName);
 
-        return file;
-    }
-
-
+    /*
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
@@ -252,6 +281,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             }
         }
     }
+    */
 
     private void trackSale() {
         //decrease quantity
@@ -296,7 +326,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         String supplierString = mSupplierEditText.getText().toString().trim();
         String photoPath = "";
 
-        /*
+
         if (mUri != null) {
             photoPath = mUri.getPath();
             mProductImage.setTag(photoPath);
@@ -304,7 +334,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             photoPath = mImage;
         }
 
-        */
+
         //need to figure out how to SAVE THE PHOTO, maybe don't need this to be under "saved"
 
         //Check if this is supposed to be a new product
@@ -462,7 +492,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             String price = cursor.getString(priceColumnIndex);
             String supplier = cursor.getString(supplierColumnIndex);
             mImage = cursor.getString(pictureColumnIndex);
-            //Uri imageUri = Uri.parse("content://" + FILE_PROVIDER_AUTHORITY + mImage);
+            Uri imageUri = Uri.parse("content://" + FILE_PROVIDER_AUTHORITY + mImage);
 
             //Update the views on the screen
             mNameEditText.setText(name);
@@ -552,42 +582,42 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     public void requestPermissions() {
 
+        //check to see if the permissions are established already
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
                 || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
 
 
+            //created which permissions should be asked for
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE) ||
                     ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
 
+                    return;
             } else {
 
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
                                 Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA},
-                        MY_PERMISSIONS_REQUEST);
+                        PERMISSIONS_REQUEST);
             }
         }
 
     }
 
-    /*
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST: {
+            case PERMISSIONS_REQUEST: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                        && grantResults[1] == PackageManager.PERMISSION_GRANTED
-                        && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
-
-
-                    mCameraButton.setEnabled(true);
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        mCameraButton.setEnabled(true);
+                } else {
+                    mCameraButton.setEnabled(false);
                 }
             }
         }
 
-    }*/
+    }
 }
