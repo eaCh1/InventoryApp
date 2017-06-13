@@ -214,7 +214,7 @@ public class ProductProvider extends ContentProvider {
 
         }
 
-        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_QUANTITY)) {
+        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_SUPPLIER)) {
             String supplier = values.getAsString(ProductEntry.COLUMN_PRODUCT_SUPPLIER);
             if (supplier == null) {
                 throw new IllegalArgumentException("Product requires a supplier");

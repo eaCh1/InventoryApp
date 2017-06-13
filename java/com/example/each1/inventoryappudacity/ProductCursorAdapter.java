@@ -1,10 +1,13 @@
 package com.example.each1.inventoryappudacity;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
@@ -35,8 +38,9 @@ public class ProductCursorAdapter extends CursorAdapter {
 
         //Find the fields to populate
         TextView nameTextView = (TextView) view.findViewById(R.id.name);
-        TextView quantityTextView = (TextView) view.findViewById(R.id.quantity);
+        final TextView quantityTextView = (TextView) view.findViewById(R.id.quantity);
         TextView priceTextView = (TextView) view.findViewById(R.id.price);
+        Button saleButton = (Button) view.findViewById(R.id.sale_button);
 
         //Find the columns of the product attributes
         int nameColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_NAME);
@@ -45,12 +49,27 @@ public class ProductCursorAdapter extends CursorAdapter {
 
         //Extract the information from those views
         String productName = cursor.getString(nameColumnIndex);
-        String productQuantity = cursor.getString(quantityColumnIndex);
+        final String productQuantity = cursor.getString(quantityColumnIndex);
         String productPrice = cursor.getString(priceColumnIndex);
 
         //populate fields
         nameTextView.setText(productName);
         quantityTextView.setText(productQuantity);
         priceTextView.setText(productPrice);
+
+        saleButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                int quantity = 0;
+                quantity = Integer.valueOf(quantityTextView.getText().toString());
+
+                if (quantity > 0) {
+                    quantity = quantity - 1;
+                }
+                quantityTextView.setText("" + quantity);
+            }
+        });
     }
+
 }

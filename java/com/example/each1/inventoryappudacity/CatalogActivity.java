@@ -1,6 +1,7 @@
 package com.example.each1.inventoryappudacity;
 
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -13,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -23,15 +25,12 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
     private static final int PRODUCT_LOADER = 0;
 
     ProductCursorAdapter mCursorAdapter;
-
-    private TextView mQuantityTextView;
+    TextView mQuantityTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_catalog2);
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -43,15 +42,15 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
             }
         });
 
-        // Find the ListView which will be populated with the pet data
+        // Find the ListView which will be populated with the product data
         ListView productListView = (ListView) findViewById(R.id.list);
 
         // Find and set empty view on the ListView, so that it only shows when the list has 0 items.
         View emptyView = findViewById(R.id.empty_view);
         productListView.setEmptyView(emptyView);
 
-        //setup an adapter to create a list item for each row of pet data in the Cursor
-        //there is no pet data yet (until the loader finishes) so pass in null for the Cursor
+        //setup an adapter to create a list item for each row of product data in the Cursor
+        //there is no product data yet (until the loader finishes) so pass in null for the Cursor
         mCursorAdapter = new ProductCursorAdapter(this, null);
         productListView.setAdapter(mCursorAdapter);
 
@@ -63,12 +62,22 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
                 //Create the new Intent to go to the EditorActivity
                 Intent intent = new Intent(CatalogActivity.this, DetailActivity.class);
 
-                //Form the content URI that represents the specific pet that was clicked on,
-                //by appending the ID (passed as input to this method) onto the PetEntry.CONTENT_URI
+                //Form the content URI that represents the specific product that was clicked on,
+                //by appending the ID (passed as input to this method) onto the ProductEntry.CONTENT_URI
                 Uri currentProductUri = ContentUris.withAppendedId(ProductEntry.CONTENT_URI, id);
 
                 //Set the uri on the data field of the intent
                 intent.setData(currentProductUri);
+
+                //reads edittext
+                mQuantityTextView = (TextView) view.findViewById(R.id.quantity);
+                String quantityString = mQuantityTextView.getText().toString();
+
+                //updates quantity in database before switching intents
+                ContentValues values = new ContentValues();
+                values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, quantityString);
+
+                getContentResolver().update(currentProductUri, values, null, null);
 
                 startActivity(intent);
             }
@@ -77,16 +86,6 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         getSupportLoaderManager().initLoader(PRODUCT_LOADER, null, this);
     }
 
-    /*
-    private void trackSale() {
-        //decrease quantity
-        int quantity = 0;
-        mQuantityTextView = (TextView) findViewById(R.id.quantity);
-        quantity =  Integer.valueOf(mQuantityTextView.getText().toString());
-        quantity = quantity - 1;
-        mQuantityTextView.setText(quantity);
-    }
-    */
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {

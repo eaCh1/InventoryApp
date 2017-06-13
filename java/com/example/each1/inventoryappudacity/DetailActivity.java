@@ -104,7 +104,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         Intent intent = getIntent();
         mCurrentProductUri = intent.getData();
 
-        //If the intent doesn't contain a product content uri, then creating a new pet
+        //If the intent doesn't contain a product content uri, then creating a new product
         if (mCurrentProductUri == null) {
             setTitle(getString(R.string.detail_title_add_new_product));
 
@@ -437,7 +437,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 //User clicked the "Keep editing" button, so dimiss the dialog
-                // and continue editing the pet
+                // and continue editing the product
                 if (dialog != null) {
                     dialog.dismiss();
                 }
@@ -455,14 +455,14 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         builder.setMessage(R.string.delete_dialog_msg);
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Delete" button, so delete the pet.
+                // User clicked the "Delete" button, so delete the product
                 deleteProduct();
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Cancel" button, so dismiss the dialog
-                // and continue editing the pet.
+                // and continue editing the product
                 if (dialog != null) {
                     dialog.dismiss();
                 }
