@@ -1,4 +1,5 @@
-//camera implementation utilizes code from https://github.com/crlsndrsjmnz/MyFileProviderExample
+//camera permissions implementation utilizes code from https://github.com/crlsndrsjmnz/MyFileProviderExample
+//camera usage utilizes code from https://guides.codepath.com/android/Accessing-the-Camera-and-Stored-Media
 //bitmap implementation utilizes code from https://stackoverflow.com/questions/3879992/how-to-get-bitmap-from-an-uri
 
 package com.example.each1.inventoryappudacity;
@@ -10,12 +11,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.os.Bundle;
 import android.net.Uri;
 import android.os.Environment;
-import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
@@ -30,7 +28,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -39,36 +36,28 @@ import android.widget.Toast;
 
 import com.example.each1.inventoryappudacity.data.ProductContract.ProductEntry;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import static android.os.Environment.getExternalStorageDirectory;
-
 
 /**
  * Created by each1 on 6/4/17.
  */
 
 public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-
-    //Still NEED TO FIGURE OUT HOW TO INCLUDE CAMERA STUFF
-
-    public final String APP_TAG = "InventoryApp";
-
+    //LOG_TAG for testing
     private static final String LOG_TAG = DetailActivity.class.getSimpleName();
 
     //Identifier for product data loader
     private static final int EXISTING_PRODUCT_LOADER = 0;
 
+    //Constant for camera
     static final int REQUEST_TAKE_PHOTO = 1;
 
     private static final int PERMISSIONS_REQUEST = 2;
 
+    //Constant variable for file provider path
     private static final String FILE_PROVIDER_AUTHORITY = "com.example.android.fileprovider";
 
     //Content Uri for the existing product (null if it's a new product)
@@ -105,6 +94,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+        //request camera and storage permissions on first run of app
         requestPermissions();
 
         //use getIntent() and getData() to get the associated URI
@@ -208,6 +198,17 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
+    }
+
+    // translates URI into an Bitmap for displaying
+    // code from https://stackoverflow.com/questions/3879992/how-to-get-bitmap-from-an-uri
+    private Bitmap getBitmapFromUri(Uri mUri) {
+        try {
+            mBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mUri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return mBitmap;
     }
 
     private void trackSale() {
@@ -498,6 +499,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         finish();
     }
 
+
+    //utilizes code from https://github.com/crlsndrsjmnz/MyFileProviderExample
     public void requestPermissions() {
 
         //check to see if the permissions are established already
@@ -523,6 +526,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     }
 
+
+    //utilizes code from https://github.com/crlsndrsjmnz/MyFileProviderExample
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
@@ -535,21 +540,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                     mCameraButton.setEnabled(false);
                 }
             }
-        }
-    }
-
-    private Bitmap getBitmapFromUri(Uri uri) {
-        ParcelFileDescriptor parcelFileDescriptor = null;
-        try {
-            parcelFileDescriptor =
-                    getContentResolver().openFileDescriptor(uri, "r");
-            FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-            Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-            parcelFileDescriptor.close();
-            return image;
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Failed to load image.", e);
-            return null;
         }
     }
 }
