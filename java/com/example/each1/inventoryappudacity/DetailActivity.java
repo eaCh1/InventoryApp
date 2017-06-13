@@ -249,18 +249,19 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         String priceString = mPriceEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
         String supplierString = mSupplierEditText.getText().toString().trim();
-        String photoPath = "";
+        String photoString = "";
 
 
+        // if there is a photo in mUri, set the String photoString as the mUri
+        // set a Tag, temp memory, to the ImageView
         if (mUri != null) {
-            photoPath = mUri.getPath();
-            mProductImage.setTag(photoPath);
+            photoString = mUri.getPath();
+            mProductImage.setTag(photoString);
         }
-
 
         //Check if this is supposed to be a new product
         //and check if the fields in the editor are blank
-        if (mCurrentProductUri == null &&
+        if (mCurrentProductUri == null && photoString.equals("") ||
                 TextUtils.isEmpty(nameString) || TextUtils.isEmpty(priceString) ||
                 TextUtils.isEmpty(quantityString) || TextUtils.isEmpty(supplierString)) {
             //since no fields were modified, return early
@@ -273,7 +274,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         values.put(ProductEntry.COLUMN_PRODUCT_PRICE, priceString);
         values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, quantityString);
         values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER, supplierString);
-        values.put(ProductEntry.COLUMN_PRODUCT_PICTURE, photoPath);
+        values.put(ProductEntry.COLUMN_PRODUCT_PICTURE, photoString);
 
         //Determine if this is a new or existing product checking if mCurrentProductUri is null or not
         if (mCurrentProductUri == null) {
@@ -307,7 +308,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 Toast.makeText(this, getString(R.string.detail_update_product_successful),
                         Toast.LENGTH_SHORT).show();
             }
-
         }
     }
 
@@ -354,7 +354,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                     NavUtils.navigateUpFromSameTask(DetailActivity.this);
                     return true;
                 }
-
                 //if there are unsaved changes, warn the user.
                 //Create a click listener to handle the user confirming that
                 //changes should be discarded
@@ -367,11 +366,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                                 NavUtils.navigateUpFromSameTask(DetailActivity.this);
                             }
                         };
-
                 //Show a dialog that notifies the user they have unsaved changes
                 showUnsavedChangesDialog(discardButtonClickListener);
                 return true;
-
         }
         return super.onOptionsItemSelected(item);
     }

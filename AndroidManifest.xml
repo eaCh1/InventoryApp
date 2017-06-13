@@ -7,7 +7,6 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -32,12 +31,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".CatalogActivity" />
         </activity>
-
         <provider
             android:name=".data.ProductProvider"
             android:authorities="com.example.each1.inventoryappudacity"
             android:exported="false" />
-
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.example.android.fileprovider"
@@ -48,10 +45,5 @@
                 android:resource="@xml/file_paths">
             </meta-data>
         </provider>
-
-
     </application>
-
-
-
 </manifest>
