@@ -15,7 +15,9 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.each1.inventoryappudacity.data.ProductContract.ProductEntry;
 
@@ -24,6 +26,8 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
     private static final int PRODUCT_LOADER = 0;
 
     ProductCursorAdapter mCursorAdapter;
+
+    private TextView mQuantityTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +58,17 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         mCursorAdapter = new ProductCursorAdapter(this, null);
         productListView.setAdapter(mCursorAdapter);
 
+        Button saleButton = (Button) findViewById(R.id.sale_button);
+        saleButton.setOnClickListener(new AdapterView.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                trackSale();
+            }
+        });
+
         //Setup item click listener
         productListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 //Create the new Intent to go to the EditorActivity
@@ -71,11 +84,17 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
                 startActivity(intent);
             }
         });
-
-
         //Kick offf the loader
         getSupportLoaderManager().initLoader(PRODUCT_LOADER, null, this);
+    }
 
+    private void trackSale() {
+        //decrease quantity
+        int quantity = 0;
+        mQuantityTextView = (TextView) findViewById(R.id.quantity);
+        quantity =  Integer.valueOf(mQuantityTextView.getText().toString());
+        quantity = quantity - 1;
+        mQuantityTextView.setText(quantity);
     }
 
     @Override
@@ -85,7 +104,8 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
                 ProductEntry._ID,
                 ProductEntry.COLUMN_PRODUCT_NAME,
                 ProductEntry.COLUMN_PRODUCT_QUANTITY,
-                ProductEntry.COLUMN_PRODUCT_PRICE };
+                ProductEntry.COLUMN_PRODUCT_PRICE};
+
         //THis loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this, //parent activity context
                 ProductEntry.CONTENT_URI, //Provider content URI to query

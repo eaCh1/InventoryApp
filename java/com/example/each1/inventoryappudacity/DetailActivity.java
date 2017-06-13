@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.os.Bundle;
 import android.net.Uri;
@@ -45,6 +46,8 @@ import java.util.Date;
 public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     //Still NEED TO FIGURE OUT HOW TO INCLUDE CAMERA STUFF
+
+    public final String APP_TAG = "InventoryApp";
 
     static final int REQUEST_TAKE_PHOTO = 1;
 
@@ -138,26 +141,70 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         pictureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    takePicture();
+                   dispatchTakePictureIntent();
             }
         });
     }
 
+    //Be weary: the Take Picture button acts like the Save button in some way, meaning, it needs input checks like CurrentProductUri
+
+
+    /**
     private void takePicture () {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);}
 
     }
+     **/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
+            //Bundle extras = data.getExtras();
             //Bitmap imageBitmap = (Bitmap) extras.get("data");
 
-            dispatchTakePictureIntent();
+            // method to take uri from Photo and store it into database, maybe it can do it with the picture intent
+            // will need to use .put
+            //savePhoto();
+
+            //retrieve image uri and set it to the image view
+            displayPhoto(mProductImageView);
+
+
         }
+    }
+
+    public void savePhoto() {
+
+
+    }
+
+    public void displayPhoto(ImageView mProductImageView) {
+
+        //photoFileName is actually created in Create Image File
+        //Uri takenPhotoUri = getPhotoFileUri(photoFileName);
+        //Bitmap takenImage = BitmapFactory.decodeFile(takenPhotoUri.getPath());
+        //mProductImageView.setImageBitmap(takenImage);
+    }
+
+    public Uri getPhotoFileUri(String fileName) {
+
+        if (isExternalStorageWritable()) {
+            File mediaStorageDir = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), APP_TAG);
+
+            // Create the storage directory if it does not exist
+            if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
+                Log.d(APP_TAG, "failed to create directory");
+            }
+
+            // Return the file target for the photo based on filename
+            File file = new File(mediaStorageDir.getPath() + File.separator + fileName);
+
+            return FileProvider.getUriForFile(DetailActivity.this, "com.each1.fileprovider", file);
+
+        }
+        return null;
     }
 
     private File createImageFile() throws IOException {
@@ -176,7 +223,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         return image;
     }
 
-    /* Checks if external storage is available for read and write */
+
+    // Checks if external storage is available for read and write
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
@@ -184,8 +232,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         }
         return false;
     }
-
-    /* Checks if external storage is available to at least read */
+     /**
+    // Checks if external storage is available to at least read
     public boolean isExternalStorageReadable() {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state) ||
@@ -194,7 +242,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         }
         return false;
     }
-
+      **/
     public File getAlbumStorageDir(String albumName) {
         // Get the directory for the user's public pictures directory.
         File file = new File(Environment.getExternalStoragePublicDirectory(
@@ -202,6 +250,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         return file;
     }
+
+
+
 
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -216,10 +267,10 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.example.android.fileprovider",
-                        photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                //Uri photoURI = FileProvider.getUriForFile(this,
+                //        "com.example.each1.fileprovider",
+                //photoFile);
+                //takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
             }
         }
