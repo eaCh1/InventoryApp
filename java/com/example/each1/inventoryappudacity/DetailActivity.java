@@ -1,4 +1,5 @@
 //camera implementation utilizes code from https://github.com/crlsndrsjmnz/MyFileProviderExample
+//bitmap implementation utilizes code from https://stackoverflow.com/questions/3879992/how-to-get-bitmap-from-an-uri
 
 package com.example.each1.inventoryappudacity;
 
@@ -14,6 +15,7 @@ import android.media.Image;
 import android.os.Bundle;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
@@ -40,6 +42,7 @@ import com.example.each1.inventoryappudacity.data.ProductContract.ProductEntry;
 import org.w3c.dom.Text;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -89,25 +92,13 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     // member variable for photo
     String mCurrentPhotoPath;
 
-    //Boolean flag that keeps track of whether the pet has been edited (true) or not (false)
+    //Boolean flag that keeps track of whether the product has been edited (true) or not (false)
     private boolean mProductHasChanged = false;
 
     private Bitmap mBitmap;
     public String mImage;
     private Uri mUri;
     Button mCameraButton;
-
-    /* do i need these
-    private static final int PICK_IMAGE_REQUEST = 0;
-
-    private boolean isGalleryPicture = false;
-
-    private static final String JPEG_FILE_PREFIX = "IMG_";
-    private static final String JPEG_FILE_SUFFIX = ".jpg";
-    private static final String CAMERA_DIR = "/dcim/";
-
-    */
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +116,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             setTitle(getString(R.string.detail_title_add_new_product));
 
         } else {
-            //xisting product, so change app to "Edit Product"
+            //existing product, so change app to "Edit Product"
             setTitle(getString(R.string.detail_title_edit_a_product));
 
             //Initialize a loader to read the product data form the database
@@ -174,67 +165,34 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mCameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //dispatchTakePictureIntent();
-                //or you can use your method
                 takePicture();
             }
         });
     }
 
-    //Be weary: the Take Picture button acts like the Save button in some way, meaning, it needs input checks like CurrentProductUri
-      private void takePicture () {
+    private void takePicture() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-          try {
+        try {
+            File file = createImageFile();
+            Log.d(LOG_TAG, "File: " + file.getAbsolutePath());
+            mUri = FileProvider.getUriForFile(this, FILE_PROVIDER_AUTHORITY, file);
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mUri);
 
-              File file = createImageFile();
-              Log.d(LOG_TAG, "File: " + file.getAbsolutePath());
-              //mUri = getPhotoFileUri(file);
-              mUri = FileProvider.getUriForFile(this, FILE_PROVIDER_AUTHORITY, file);
-              takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mUri);
-
-              if (takePictureIntent.resolveActivity(getPackageManager()) != null)
-              {startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);}
-          } catch (IOException e) {
-              e.printStackTrace();
-          }
-      }
+            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
-
-
-            /*
-            Uri imageUri = data.getData();
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            */
+            mBitmap = getBitmapFromUri(mUri);
+            mProductImage.setImageBitmap(mBitmap);
         }
-    }
-
-
-    public Uri getPhotoFileUri(File fileName) {
-
-        if (isExternalStorageWritable()) {
-            File mediaStorageDir = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), APP_TAG);
-
-            // Create the storage directory if it does not exist
-            if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
-                Log.d(APP_TAG, "failed to create directory");
-            }
-
-            // Return the file target for the photo based on filename
-            File file = new File(mediaStorageDir.getPath() + File.separator + fileName);
-
-            return FileProvider.getUriForFile(DetailActivity.this, FILE_PROVIDER_AUTHORITY, file);
-
-        }
-        return null;
     }
 
     private File createImageFile() throws IOException {
@@ -247,41 +205,10 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 ".jpg",         /* suffix */
                 storageDir      /* directory */
         );
-
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
     }
-
-    // Checks if external storage is available for read and write
-    public boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
-    }
-
-
-    /*
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-            }
-        }
-    }
-    */
 
     private void trackSale() {
         //decrease quantity
@@ -291,14 +218,12 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mQuantityEditText.setText("" + quantity);
     }
 
-
     private void receiveShipment() {
         //increase quantity
         int quantity = 0;
         quantity = Integer.valueOf(mQuantityEditText.getText().toString());
         quantity = quantity + 1;
         mQuantityEditText.setText("" + quantity);
-
     }
 
     private void sendEmail() {
@@ -330,12 +255,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         if (mUri != null) {
             photoPath = mUri.getPath();
             mProductImage.setTag(photoPath);
-        } else {
-            photoPath = mImage;
         }
 
-
-        //need to figure out how to SAVE THE PHOTO, maybe don't need this to be under "saved"
 
         //Check if this is supposed to be a new product
         //and check if the fields in the editor are blank
@@ -484,7 +405,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             int priceColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_PRICE);
             int quantityColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_QUANTITY);
             int supplierColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_SUPPLIER);
-            int pictureColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_PRICE);
+            int pictureColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_PICTURE);
 
             //Extract the values
             String name = cursor.getString(nameColumnIndex);
@@ -499,7 +420,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             mQuantityEditText.setText(quantity);
             mPriceEditText.setText(price);
             mSupplierEditText.setText(supplier);
-            //mProductImage.setImageBitmap(getBitmapFromUri(imageUri));
+            mProductImage.setImageBitmap(getBitmapFromUri(imageUri));
         }
     }
 
@@ -593,7 +514,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                     ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
 
-                    return;
+                return;
             } else {
 
                 ActivityCompat.requestPermissions(this,
@@ -612,12 +533,26 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        mCameraButton.setEnabled(true);
+                    mCameraButton.setEnabled(true);
                 } else {
                     mCameraButton.setEnabled(false);
                 }
             }
         }
+    }
 
+    private Bitmap getBitmapFromUri(Uri uri) {
+        ParcelFileDescriptor parcelFileDescriptor = null;
+        try {
+            parcelFileDescriptor =
+                    getContentResolver().openFileDescriptor(uri, "r");
+            FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+            Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+            parcelFileDescriptor.close();
+            return image;
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Failed to load image.", e);
+            return null;
+        }
     }
 }
