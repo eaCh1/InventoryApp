@@ -1,9 +1,11 @@
 package com.example.each1.inventoryappudacity;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
@@ -11,8 +13,10 @@ import android.os.Bundle;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.FileProvider;
 import android.support.v4.content.Loader;
@@ -51,8 +55,12 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     static final int REQUEST_TAKE_PHOTO = 1;
 
+    private static final int MY_PERMISSIONS_REQUEST = 2;
+
     //Identifier for product data loader
     private static final int EXISTING_PRODUCT_LOADER = 0;
+
+    private static final String FILE_PROVIDER_AUTHORITY = "com.example.android.fileprovider";
 
     //Content Uri for the existing product (null if it's a new product)
     private Uri mCurrentProductUri;
@@ -70,7 +78,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private EditText mSupplierEditText;
 
     // Image view to hold the product's image
-    private ImageView mProductImageView;
+    private ImageView mProductImage;
 
     // member variable for photo
     String mCurrentPhotoPath;
@@ -78,10 +86,19 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     //Boolean flag that keeps track of whether the pet has been edited (true) or not (false)
     private boolean mProductHasChanged = false;
 
+    private Bitmap mBitmap;
+    public String mImage;
+    private Uri mUri;
+    Button mCameraButton;
+
+    private static final String CAMERA_DIR = "/dcim/";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+        //requestPermissions();
 
         //use getIntent() and getData() to get the associated URI
         Intent intent = getIntent();
@@ -105,7 +122,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mPriceEditText = (EditText) findViewById(R.id.detail_price);
         mQuantityEditText = (EditText) findViewById(R.id.detail_quantity);
         mSupplierEditText = (EditText) findViewById(R.id.detail_supplier);
-        //mProductImageView = (ImageView) findViewById(R.id.detail_image);
+        mProductImage = (ImageView) findViewById(R.id.detail_image);
+        mCameraButton = (Button) findViewById(R.id.detail_take_picture);
 
         Button orderButton = (Button) findViewById(R.id.detail_order_from_supplier);
         orderButton.setOnClickListener(new View.OnClickListener() {
@@ -137,56 +155,31 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             }
         });
 
-        Button pictureButton = (Button) findViewById(R.id.detail_take_picture);
-        pictureButton.setOnClickListener(new View.OnClickListener() {
+        mProductImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                   dispatchTakePictureIntent();
+                //dispatchTakePictureIntent();
+                //or you can use your method
+                // takePicture();
             }
         });
     }
 
     //Be weary: the Take Picture button acts like the Save button in some way, meaning, it needs input checks like CurrentProductUri
-
-
-    /**
-    private void takePicture () {
+      private void takePicture () {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);}
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null)
+            {startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);}
+      }
 
-    }
-     **/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
-            //Bundle extras = data.getExtras();
-            //Bitmap imageBitmap = (Bitmap) extras.get("data");
-
-            // method to take uri from Photo and store it into database, maybe it can do it with the picture intent
-            // will need to use .put
-            //savePhoto();
-
-            //retrieve image uri and set it to the image view
-            displayPhoto(mProductImageView);
-
 
         }
     }
 
-    public void savePhoto() {
-
-
-    }
-
-    public void displayPhoto(ImageView mProductImageView) {
-
-        //photoFileName is actually created in Create Image File
-        //Uri takenPhotoUri = getPhotoFileUri(photoFileName);
-        //Bitmap takenImage = BitmapFactory.decodeFile(takenPhotoUri.getPath());
-        //mProductImageView.setImageBitmap(takenImage);
-    }
 
     public Uri getPhotoFileUri(String fileName) {
 
@@ -194,7 +187,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             File mediaStorageDir = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), APP_TAG);
 
             // Create the storage directory if it does not exist
-            if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
+            if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
                 Log.d(APP_TAG, "failed to create directory");
             }
 
@@ -232,17 +225,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         }
         return false;
     }
-     /**
-    // Checks if external storage is available to at least read
-    public boolean isExternalStorageReadable() {
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-            return true;
-        }
-        return false;
-    }
-      **/
+
     public File getAlbumStorageDir(String albumName) {
         // Get the directory for the user's public pictures directory.
         File file = new File(Environment.getExternalStoragePublicDirectory(
@@ -250,8 +233,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         return file;
     }
-
-
 
 
     private void dispatchTakePictureIntent() {
@@ -267,10 +248,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                //Uri photoURI = FileProvider.getUriForFile(this,
-                //        "com.example.each1.fileprovider",
-                //photoFile);
-                //takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
             }
         }
@@ -279,7 +256,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private void trackSale() {
         //decrease quantity
         int quantity = 0;
-        quantity =  Integer.valueOf(mQuantityEditText.getText().toString());
+        quantity = Integer.valueOf(mQuantityEditText.getText().toString());
         quantity = quantity - 1;
         mQuantityEditText.setText("" + quantity);
     }
@@ -293,6 +270,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mQuantityEditText.setText("" + quantity);
 
     }
+
     private void sendEmail() {
         //Get name of product for email subject
         String productName = mNameEditText.getText().toString();
@@ -316,7 +294,17 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         String priceString = mPriceEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
         String supplierString = mSupplierEditText.getText().toString().trim();
-        //String imageString = mProductImageView
+        String photoPath = "";
+
+        /*
+        if (mUri != null) {
+            photoPath = mUri.getPath();
+            mProductImage.setTag(photoPath);
+        } else {
+            photoPath = mImage;
+        }
+
+        */
         //need to figure out how to SAVE THE PHOTO, maybe don't need this to be under "saved"
 
         //Check if this is supposed to be a new product
@@ -334,6 +322,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         values.put(ProductEntry.COLUMN_PRODUCT_PRICE, priceString);
         values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, quantityString);
         values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER, supplierString);
+        values.put(ProductEntry.COLUMN_PRODUCT_PICTURE, photoPath);
 
         //Determine if this is a new or existing product checking if mCurrentProductUri is null or not
         if (mCurrentProductUri == null) {
@@ -445,8 +434,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 ProductEntry.COLUMN_PRODUCT_NAME,
                 ProductEntry.COLUMN_PRODUCT_PRICE,
                 ProductEntry.COLUMN_PRODUCT_QUANTITY,
-                ProductEntry.COLUMN_PRODUCT_SUPPLIER
-                //ProductEntry.COLUMN_PRODUCT_PICTURE
+                ProductEntry.COLUMN_PRODUCT_SUPPLIER,
+                ProductEntry.COLUMN_PRODUCT_PICTURE
         };
 
         return new CursorLoader(this, mCurrentProductUri, projection, null, null, null);
@@ -465,20 +454,22 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             int priceColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_PRICE);
             int quantityColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_QUANTITY);
             int supplierColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_SUPPLIER);
-            //int pictureColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_PRICE);
+            int pictureColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_PRICE);
 
             //Extract the values
             String name = cursor.getString(nameColumnIndex);
             String quantity = cursor.getString(quantityColumnIndex);
             String price = cursor.getString(priceColumnIndex);
             String supplier = cursor.getString(supplierColumnIndex);
-            //String picture = cursor.getString(pictureColumnIndex);
+            mImage = cursor.getString(pictureColumnIndex);
+            //Uri imageUri = Uri.parse("content://" + FILE_PROVIDER_AUTHORITY + mImage);
 
             //Update the views on the screen
             mNameEditText.setText(name);
             mQuantityEditText.setText(quantity);
             mPriceEditText.setText(price);
             mSupplierEditText.setText(supplier);
+            //mProductImage.setImageBitmap(getBitmapFromUri(imageUri));
         }
     }
 
@@ -558,4 +549,45 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         //Close the activity
         finish();
     }
+
+    public void requestPermissions() {
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE) ||
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+
+            } else {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA},
+                        MY_PERMISSIONS_REQUEST);
+            }
+        }
+
+    }
+
+    /*
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+
+
+                    mCameraButton.setEnabled(true);
+                }
+            }
+        }
+
+    }*/
 }
