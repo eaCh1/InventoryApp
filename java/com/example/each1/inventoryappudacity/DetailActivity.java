@@ -11,9 +11,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
@@ -37,6 +39,7 @@ import android.widget.Toast;
 import com.example.each1.inventoryappudacity.data.ProductContract.ProductEntry;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -200,22 +203,14 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         return image;
     }
 
-    // translates URI into an Bitmap for displaying
-    // code from https://stackoverflow.com/questions/3879992/how-to-get-bitmap-from-an-uri
-    private Bitmap getBitmapFromUri(Uri mUri) {
-        try {
-            mBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mUri);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return mBitmap;
-    }
-
     private void trackSale() {
         //decrease quantity
         int quantity = 0;
         quantity = Integer.valueOf(mQuantityEditText.getText().toString());
-        quantity = quantity - 1;
+
+        if (quantity > 0) {
+            quantity = quantity - 1;
+        }
         mQuantityEditText.setText("" + quantity);
     }
 
@@ -252,17 +247,18 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         String supplierString = mSupplierEditText.getText().toString().trim();
         String photoString = "";
 
-
         // if there is a photo in mUri, set the String photoString as the mUri
         // set a Tag, temp memory, to the ImageView
         if (mUri != null) {
             photoString = mUri.getPath();
             mProductImage.setTag(photoString);
+        } else {
+            photoString = mImage;
         }
 
         //Check if this is supposed to be a new product
         //and check if the fields in the editor are blank
-        if (mCurrentProductUri == null && photoString.equals("") ||
+        if (mCurrentProductUri == null &&
                 TextUtils.isEmpty(nameString) || TextUtils.isEmpty(priceString) ||
                 TextUtils.isEmpty(quantityString) || TextUtils.isEmpty(supplierString)) {
             //since no fields were modified, return early
@@ -373,7 +369,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         }
         return super.onOptionsItemSelected(item);
     }
-
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -539,6 +534,31 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 } else {
                     mCameraButton.setEnabled(false);
                 }
+            }
+        }
+    }
+
+    // code from https://stackoverflow.com/questions/3879992/how-to-get-bitmap-from-an-uri
+    private Bitmap getBitmapFromUri(Uri uri) {
+        ParcelFileDescriptor parcelFileDescriptor = null;
+        try {
+            parcelFileDescriptor =
+                    getContentResolver().openFileDescriptor(uri, "r");
+            FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+            Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+            parcelFileDescriptor.close();
+            return image;
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Failed to load image.", e);
+            return null;
+        } finally {
+            try {
+                if (parcelFileDescriptor != null) {
+                    parcelFileDescriptor.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e(LOG_TAG, "Error closing ParcelFile Descriptor");
             }
         }
     }

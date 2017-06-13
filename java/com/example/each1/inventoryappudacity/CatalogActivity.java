@@ -1,13 +1,10 @@
 package com.example.each1.inventoryappudacity;
 
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -80,6 +77,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         getSupportLoaderManager().initLoader(PRODUCT_LOADER, null, this);
     }
 
+    /*
     private void trackSale() {
         //decrease quantity
         int quantity = 0;
@@ -88,6 +86,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         quantity = quantity - 1;
         mQuantityTextView.setText(quantity);
     }
+    */
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {

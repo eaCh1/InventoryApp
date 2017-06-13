@@ -33,12 +33,10 @@ public class ProductCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
-
         //Find the fields to populate
         TextView nameTextView = (TextView) view.findViewById(R.id.name);
         TextView quantityTextView = (TextView) view.findViewById(R.id.quantity);
         TextView priceTextView = (TextView) view.findViewById(R.id.price);
-
 
         //Find the columns of the product attributes
         int nameColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_NAME);
@@ -54,6 +52,5 @@ public class ProductCursorAdapter extends CursorAdapter {
         nameTextView.setText(productName);
         quantityTextView.setText(productQuantity);
         priceTextView.setText(productPrice);
-
     }
 }
