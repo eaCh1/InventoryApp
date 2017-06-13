@@ -58,14 +58,6 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         mCursorAdapter = new ProductCursorAdapter(this, null);
         productListView.setAdapter(mCursorAdapter);
 
-        Button saleButton = (Button) findViewById(R.id.sale_button);
-        saleButton.setOnClickListener(new AdapterView.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                trackSale();
-            }
-        });
-
         //Setup item click listener
         productListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
