@@ -5,15 +5,10 @@ Summary:
   The Inventory App for Android is a demo project for Udacity Android Basics Nanodegree. It stores a list of different products held in an inventory, including a picture of the product. There is also a button which launches an email client to order more product from suppliers. One could benefit from using this app because of its camera function and email function, keeping track of inventory with a visual aid and providing a direct means of communicating with supply vendors. This ReadMe describes the langauges and tools utilized, the concepts involved, and the setup process.
   
 Technologies:
-  Java, with Android Studio
-  XML
-  
+  Java, XML, Android Studio
   
 Conceptual Implementations:
-  LoaderManager
-  Local file storage
-  Camera intent
-  Email intent
+  LoaderManager, local file storage, camera intent, email intent
   
  Setup:
   Open the file in Android Studio. Once available, click Run. It will ask for a destination like a physical device or virtual emulator. Make your selection and install the appication onto the device. Press the applicatino icon to open, if it does not open after installation by default.
