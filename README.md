@@ -20,3 +20,11 @@ Getting Started:
 Screenshots of different views of the app, including header titles that change with context
 
 ![Empty View](http://i68.tinypic.com/2rpa8us.png "First screen displayed upon opening app: an empty inventory")
+
+![Add View](http://i67.tinypic.com/vshssh.png "View title changes if it's a new product")
+
+![Edit View](http://i65.tinypic.com/8y9fg4.png "View title changes if it's not an old product")
+
+![Permissions](http://i64.tinypic.com/2r4698j.png "Camera asking for permissions")
+
+![Landscape View](http://i66.tinypic.com/30agkkw.png "Landscape view of main screen")
